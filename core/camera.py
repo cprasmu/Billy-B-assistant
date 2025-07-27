@@ -1,4 +1,3 @@
-# from picamera2 import Picamera2
 import os
 import subprocess
 import base64
@@ -14,15 +13,6 @@ PHOTO_HISTORY_DIR = os.path.join(PROJECT_ROOT, "photos")
 
 os.makedirs(PHOTO_HISTORY_DIR, exist_ok=True)
 
-
-# def __init__(self):
-#     # Initialize the camera
-#     self.picam2 = Picamera2()
-#     # Configure the camera
-#     self.config = picam2.create_still_configuration(lores={"size": (640, 480)}, display="lores")
-#     self.picam2.configure(self.config)
-
-
 # Function to encode the image
 def encode_image(image_path):
     with open(image_path, "rb") as image_file:
@@ -36,10 +26,10 @@ def rotate_image_files():
         if os.path.exists(src):
             os.replace(src, dst)
 
-def take_photo(name="photo-1.jpg"):
+def take_photo(name="photo-1"):
 
     """ Capture a photo using the Picamera2 library and save it as 'photo.jpg'. """
-
+    print("take_photo called")
     if CAMERA_MODE != "normal":
         print("Camera mode is not set to 'normal'. Skipping photo capture.")
         return None
@@ -47,6 +37,7 @@ def take_photo(name="photo-1.jpg"):
     # Log the action
     print("Taking a photo...")
 
+    name += ".jpg"
     if name == "photo-1.jpg":
         rotate_image_files()
 
@@ -57,7 +48,7 @@ def take_photo(name="photo-1.jpg"):
     try:
         # Call the command to capture the photo
         result = subprocess.check_output(
-            ["rpicam-jpeg", "-o", full_path, "-n", "-t", "1"],
+            ["rpicam-jpeg", "-o", full_path, "--width", "640", "--height", "480", "-n", "-t", "1"],
             cwd=PHOTO_HISTORY_DIR,
             stderr=subprocess.DEVNULL,
             text=True,
@@ -73,13 +64,4 @@ def take_photo(name="photo-1.jpg"):
     
     print("Photo saved ")
     return encode_image(full_path)
-
-    # # Start the camera
-    # self.picam2.start(show_preview=False)
-    # # Capture the photo
-    # self.picam2.capture_file("photo-1.jpg")
-    # # Stop the camera
-    # self.picam2.stop()
-
-
 
