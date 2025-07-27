@@ -68,3 +68,6 @@ persona.ini
 versions.ini
 venv
 webconfig/node_modules
+
+# RUNTIME GENERATED
+response-*.wav

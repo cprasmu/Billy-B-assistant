@@ -21,13 +21,14 @@ from .config import (
     SILENCE_THRESHOLD,
     TEXT_ONLY_MODE,
     VOICE,
+    CAMERA_MODE,
 )
 from .ha import send_conversation_prompt
 from .mic import MicManager
 from .movements import move_tail_async, stop_all_motors
 from .mqtt import mqtt_publish
 from .personality import update_persona_ini
-
+from .camera import take_photo
 
 TOOLS = [
     {
@@ -66,7 +67,17 @@ TOOLS = [
             },
             "required": ["prompt"],
         },
-    },
+    },,
+    {
+        "name": "take_photo",
+        "type": "function",
+        "description": "Take a photo and send it to be analyzed.",
+        "parameters": {
+            "type": "object",
+            "properties": {"name": {"type": "string"}},
+            "required": ["name"],
+        },
+    }
 ]
 
 
@@ -354,6 +365,47 @@ class BillySession:
                                 })
                             )
                             await self.ws.send(json.dumps({"type": "response.create"}))
+
+            elif data.get("name") == "take_photo":
+                args = json.loads(data["arguments"])
+                name = args.get("name")
+                if CAMERA_MODE == "normal":
+                    print(f"\nAssistant requested to take a photo.")
+                    base64_image = take_photo(name)
+
+                    if base64_image == "failed":
+                        print("⚠️ Failed to take photo, sending error response.")
+                        async with self.ws_lock:
+                            await self.ws.send(
+                                json.dumps({
+                                    "type": "conversation.item.create",
+                                    "item": {
+                                        "type": "message",
+                                        "role": "user",
+                                        "content": [
+                                            {"type": "input_text", "text": "Failed to take photo."}
+                                        ],
+                                    },
+                                })
+                            )
+                            await self.ws.send(json.dumps({"type": "response.create"}))
+                
+                    async with self.ws_lock:
+                        await self.ws.send(
+                            json.dumps({
+                                "type": "conversation.item.create",
+                                "item": {
+                                    "type": "message",
+                                    "role": "user",
+                                    "content": [
+                                        {"type": "input_text", "text": "What’s in this image?"},
+                                        {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}}
+                                    ],
+                                },
+                            })
+                        )
+                        await self.ws.send(json.dumps({"type": "response.create"}))
+
 
         elif data["type"] == "response.done":
             error = data.get("status_details", {}).get("error")

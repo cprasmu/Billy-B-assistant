@@ -90,6 +90,10 @@ SILENCE_THRESHOLD = int(os.getenv("SILENCE_THRESHOLD", "2000"))
 CHUNK_MS = int(os.getenv("CHUNK_MS", "50"))
 PLAYBACK_VOLUME = 1
 
+# === Camera Config ===
+CAMERA_MODE = os.getenv("CAMERA_MODE", "NONE")
+
+
 # === GPIO Config ===
 BUTTON_PIN = int(os.getenv("BUTTON_PIN", "27"))
 
