@@ -1,7 +1,6 @@
 import os
 import subprocess
 import base64
-import requests 
 
 from .config import (
     CAMERA_MODE
