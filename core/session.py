@@ -75,7 +75,7 @@ TOOLS = [
         "parameters": {
             "type": "object",
             "properties": {"name": {"type": "string"}},
-            "required": ["name"],
+            # "required": ["name"],
         },
     }
 ]
@@ -391,6 +391,7 @@ class BillySession:
                             await self.ws.send(json.dumps({"type": "response.create"}))
                 
                     async with self.ws_lock:
+                        print("\r\n sending for anaylsysis...")
                         await self.ws.send(
                             json.dumps({
                                 "type": "conversation.item.create",
@@ -398,7 +399,7 @@ class BillySession:
                                     "type": "message",
                                     "role": "user",
                                     "content": [
-                                        {"type": "input_text", "text": "What’s in this image?"},
+                                        {"type": "input_text", "text": "This is the photo you took using the take_photo tool"},
                                         {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}}
                                     ],
                                 },
