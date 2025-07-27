@@ -67,11 +67,11 @@ TOOLS = [
             },
             "required": ["prompt"],
         },
-    },,
+    },
     {
         "name": "take_photo",
         "type": "function",
-        "description": "Take a photo and send it to be analyzed.",
+        "description": "Take a photo and sends it to the backend for analysis.",
         "parameters": {
             "type": "object",
             "properties": {"name": {"type": "string"}},
